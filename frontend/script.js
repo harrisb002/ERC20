@@ -47,5 +47,15 @@ async function getAccess() {
     dexContract = new ethers.Contract(dexAddress, dexAbi, signer);
 }
 
+async function getPrice() {
+    await getAccess();
+    const price = await dexContract.getPrice(1); //Get price of one token
+    document.getElementById("tokenPrice").innerHTML = price; //Get from HTML class name
+    return price;
+  }
 
-
+  async function getTokenBalance() {
+    await getAccess();
+    const balance = await tokenContract.balanceOf(await signer.getAddress());
+    document.getElementById("tokensBalance").innerHTML = balance;
+  }
