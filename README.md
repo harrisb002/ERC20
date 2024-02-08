@@ -1,15 +1,23 @@
 # ERC20 
 Explores deploying an ERC 20 Token contract as well as one to allow for its exchange for native Ethereum 
+
+Utilizes Open Zeppelin for ERC20 protocol
 Reference Docs: https://docs.openzeppelin.com/contracts/5.x/erc20
 
 Contracts:
 - Token.sol: Contract to represent the ERC20 Token
 - DEX.sol: Contract to act as a decentralized exchange to trade in tokens for Ethereum
 
-## Getting Started
+## Using the Frontend
+1. Install the [Liveserver Extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) in VSCode.
+2. Open [base.html](frontend/base.html)
+3. Click the button that says "Go Live" in the bottom right hand corner of your VSCode.
+4. Import any accounts you need into MetaMask/Frame and change your MetaMask network to "Hardhat".
+5. Interact with the contract!
 
-To test and deploy the smart contract follow the steps below.
+### Shell Commands
 
+#### Starter Commands
 1. Install [Node.js](https://nodejs.org/en/download/)
 2. `cd ERC20-DEX`
 3. `npm install`
@@ -18,15 +26,8 @@ To test and deploy the smart contract follow the steps below.
    - `npx hardhat node`
    - `npx hardhat run --network localhost ./script/deploy.js`
 
-## Using the Frontend
-
-1. Install the [Liveserver Extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) in VSCode.
-2. Open [base.html](frontend/base.html)
-3. Click the button that says "Go Live" in the bottom right hand corner of your VSCode.
-4. Import any accounts you need into MetaMask and change your MetaMask network to "Hardhat".
-5. Interact with the contract!
-
-```shell
+#### Other Useful Commands
+```
 npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
@@ -34,7 +35,7 @@ npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
 
-## Notes
+## Notes for Open Zeppelin
 
 ### IERC20
 Main public functions available. Only the person who has minted tokens
