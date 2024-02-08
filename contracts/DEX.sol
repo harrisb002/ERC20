@@ -50,5 +50,25 @@ contract DEX  {
         (bool sent, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(sent, "transaction failed");
     }
+
+        function getPrice(uint numTokens) public view returns (uint) {
+        return numTokens * price;
+    }
+
+    function buy(uint numTokens) external payable {
+        //Make sure enough tokens in the contract to sell
+        require(numTokens <= getTokenBalance(), "Insufficient balance of tokens");
+
+        uint amount = getPrice(numTokens); //Get the required transaction amount
+        //Make sure the amount sent is exactly the amount owed
+        require(msg.value == amount, "Insufficient amount sent.");
+
+        associatedToken.transfer(msg.sender, numTokens); //Sent the transaction owner the amount of tokens 
+    }
+
+    //Get the remaining balance of tokens within the contract
+    function getTokenBalance() public view returns (uint) {
+        return associatedToken.balanceOf(address(this));
+    }
 }
  
