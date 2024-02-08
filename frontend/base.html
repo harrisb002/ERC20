@@ -40,7 +40,28 @@
             to grant access to"
               id="tokenGrant"
             />
+            <button onclick="grantAccess()">Grant Access</button>
           </div>
+        </div>
+        <div class="item">
+          <h3>Sell Tokens</h3>
+          <button onclick="sell()">Sell</button>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <h2>User Controls</h2>
+      <div class="item">
+        <h3>Buy Tokens</h3>
+        <div>
+          <input
+            type="number"
+            min="0"
+            placeholder="Enter the number of tokens
+                to buy"
+            id="buyTokens"
+          />
+          <button onclick="buyTokens()">Buy Tokens</button>
         </div>
       </div>
     </div>
