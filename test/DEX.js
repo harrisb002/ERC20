@@ -42,11 +42,21 @@ describe("DEX", () => {
       );
     });
 
+    describe("Getters", () => {
+      it("Should return correct token balance", async () => {
+        expect(await dex.getTokenBalance()).to.equal(100);
+      });
+  
+      it("Should return correct token price", async () => {
+        expect(await dex.getPrice(10)).to.equal(price * 10);
+      });
+    });
+
     describe("Buy", () => {
       it("User can buy tokens", async () => {
         await expect(
           dex.connect(addr1).buy(10, { value: 1000 })
-        ).to.changeTokenBalances(token, [dex.address, addr1.address], [-10, 10]);
+        ).to.changeTokenBalances(token, [dex.target, addr1.address], [-10, 10]);
       });
   
       it("User cannot buy invalid number of tokens", async () => {
@@ -66,21 +76,13 @@ describe("DEX", () => {
       it("Owner can withdraw tokens", async () => {
         await expect(dex.withdrawTokens()).to.changeTokenBalances(
           token,
-          [dex.address, owner.address],
+          [dex.target, owner.address],
           [-90, 90]
         );
       });
     });
 
-    describe("Getters", () => {
-      it("Should return correct token balance", async () => {
-        expect(await dex.getTokenBalance()).to.equal(100);
-      });
-  
-      it("Should return correct token price", async () => {
-        expect(await dex.getPrice(10)).to.equal(price * 10);
-      });
-    });
+
 
   });
 });
