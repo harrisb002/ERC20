@@ -20,7 +20,7 @@ contract DEX  {
         price = _price;
     }
 
-        modifier onlyOwner {
+    modifier onlyOwner {
         require(msg.sender == owner, "You are not the owner");
         _;
     }
@@ -50,8 +50,8 @@ contract DEX  {
         (bool sent, ) = payable(msg.sender).call{value: address(this).balance}("");
         require(sent, "transaction failed");
     }
-
-        function getPrice(uint numTokens) public view returns (uint) {
+    
+    function getPrice(uint numTokens) public view returns (uint) {
         return numTokens * price;
     }
 
