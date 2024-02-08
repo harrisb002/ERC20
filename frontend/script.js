@@ -1,6 +1,6 @@
 const { ethers } = require("hardhat");
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
+const provider = new ethers.provider.Web3Provider(window.ethereum);
 let signer;
 
 const tokenAbi = [];

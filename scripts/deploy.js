@@ -14,8 +14,8 @@ async function main() {
   const DEX = await hre.ethers.getContractFactory("DEX");
   const dex = await DEX.deploy(token.target, 100);
 
-  await token.deployed();
-  await dex.deployed();
+  await token.waitForDeployment();
+  await dex.waitForDeployment();
   await writeDeploymentInfo(token, "token.json"); //Write to JSON file
   await writeDeploymentInfo(dex, "dex.json");
 }
@@ -24,8 +24,8 @@ async function writeDeploymentInfo(contract, filename = "") {
   const data = {
     network: hre.network.name,
     contract: {
-      address: contract.address,
-      signerAddress: contract.signer.address,
+      address: contract.target,
+      signerAddress: contract.runner.address,
       abi: contract.interface.format(),
     },
   };
