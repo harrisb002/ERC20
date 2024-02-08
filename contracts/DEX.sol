@@ -19,5 +19,36 @@ contract DEX  {
         owner = msg.sender;
         price = _price;
     }
+
+        modifier onlyOwner {
+        require(msg.sender == owner, "You are not the owner");
+        _;
+    }
+
+    //Must check the owner of this contract has been an allowance to this contract
+    //from the Token contract. Must call the allowance/approve function on the 
+    //ERC20 token and approve that this contract can transfer tokens on their behalf
+    function sell() external onlyOwner {
+        //Check to see if the owner of this contract (DEX) has approved this contract to transfer tokens on its behalf
+        //Then take the allowance and transfer it to this contract
+        //This will allow users to buy the tokens from the contract and give proceeds to the owner of the contract
+        uint allowance = associatedToken.allowance(msg.sender, address(this)); //Check how many tokens have access to
+        require(allowance > 0, "Must give the contract an allowance of at least one token");
+        bool sent = associatedToken.transferFrom(msg.sender, address(this), allowance); //Transfer the allowance to the contract 
+        require(sent, "Failed to send the tokens");
+    }
+
+    //The owner should be able to withdraw at anytime
+    function withdrawTokens() external onlyOwner {
+        uint balance = getTokenBalance(); //See how many tokens this contract has access to
+        associatedToken.transfer(msg.sender, balance); //Allow the owner of the tokens to withdraw all the tokens
+    }
+
+    //Allow coins to be purchased from this contract for a certain price
+
+    function withdrawFunds() external onlyOwner {
+        (bool sent, ) = payable(msg.sender).call{value: address(this).balance}("");
+        require(sent, "transaction failed");
+    }
 }
  
