@@ -27,4 +27,15 @@ describe("Token", () => {
       expect(await token.totalSupply()).to.equal(ownerBalance);
     });
   });
+
+  describe("Transactions", () => {
+    it("Should transfer tokens between accounts", async () => {
+      await token.transfer(addr1.address, 50)  //connect(owner) is not needed for first address becuase it is used by default
+      const addr1Balance = await token.balanceOf(addr1.address);
+      expect(addr1Balance).to.equal(50);
+    });
+    it("Should not allow to transfer for more than balance", async () => {
+      await expect(token.connect(addr1).transfer(addr2.address, 51)).to.be.reverted; 
+    });
+  });
 });
