@@ -41,5 +41,16 @@ describe("DEX", () => {
         [-100, 100]
       );
     });
+
+    describe("Getters", () => {
+      it("Should return correct token balance", async () => {
+        expect(await dex.getTokenBalance()).to.equal(100);
+      });
+  
+      it("Should return correct token price", async () => {
+        expect(await dex.getPrice(10)).to.equal(price * 10);
+      });
+    });
+    
   });
 });
