@@ -8,16 +8,11 @@ const hre = require("hardhat");
 const fs = require("fs/promises");
 
 async function main() {
-  const Token = await hre.ethers.getContractFactory("Token");
-  const token = await Token.deploy("100");
+  const SquareToken = await hre.ethers.getContractFactory("Squares");
+  const square = await SquareToken.deploy("10000000", "10");
 
-  const DEX = await hre.ethers.getContractFactory("DEX");
-  const dex = await DEX.deploy(token.target, 100);
-
-  await token.waitForDeployment();
-  await dex.waitForDeployment();
-  await writeDeploymentInfo(token, "token.json"); //Write to JSON file
-  await writeDeploymentInfo(dex, "dex.json");
+  await square.waitForDeployment();
+  await writeDeploymentInfo(square, "square.json"); //Write to JSON file
 }
 
 async function writeDeploymentInfo(contract, filename = "") {
