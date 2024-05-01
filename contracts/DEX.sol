@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
 //Whoever deploys this contract is the one who wants to sell their token
@@ -9,14 +10,16 @@ import "hardhat/console.sol";
 //what token they want to sell. Can be extended so that anyone can sell any token.
 contract DEX {
     ERC20 public associatedToken;
+    IERC20 public weth; // Instance of the WETH contract
     uint price;
     address owner;
 
     //Must send a token that adheres to this interface
     //Once passed, it will load that contract within this contract
     //Allowing the access of the methods attached to the interface
-    constructor(ERC20 _token, uint _price) {
+    constructor(ERC20 _token, IERC20 _weth, uint _price) {
         associatedToken = _token; // Get IERC20 contract instance to use interface using the Squares contract
+        weth = _weth; // Set the WETH contract instance
         owner = msg.sender;
         price = _price;
     }
@@ -44,9 +47,9 @@ contract DEX {
             "\nMaking sure there is an allowance for the address:",
             address(this)
         );
-        console.log("Its allowance is:", allowance);
+        console.log("transferAllowance: Its allowance is:", allowance);
         console.log(
-            "Its SQZ balance allowance is currently:",
+            "transferAllowance: Its SQZ balance is currently:",
             getTokenBalance()
         );
 
@@ -77,39 +80,85 @@ contract DEX {
         emit Transfer(msg.sender, address(this), allowance);
     }
 
+    function transferWethAllowance() external {
+        //Check to see if the owner of this contract (DEX) has approved this contract to transfer tokens on its behalf
+        //Then take the allowance and transfer it to this contract
+        uint allowance = weth.allowance(msg.sender, address(this)); //Check how many tokens have access to(their allowance)
+        console.log(
+            "\nMaking sure there is an WETH allowance for the address:",
+            address(this)
+        );
+        console.log("transferWethAllowance: Its WETH allowance is:", allowance);
+        console.log(
+            "transferWethAllowance: Its SQZ balance is currently:",
+            getTokenBalance()
+        );
+
+        require(
+            allowance > 0,
+            "Must give the contract an WETH allowance of at least one token"
+        );
+        emit Approval(msg.sender, address(this), allowance);
+
+        console.log("\nTransferring WETH from:", msg.sender);
+        console.log("Transferring WETH allowance to:", address(this));
+        console.log("In the ammount of:", allowance);
+
+        // Now allowed to buy amount of allowance in tokens from the contract and give proceeds to the owner of the contract
+        bool sent = weth.transferFrom(msg.sender, address(this), allowance); //Transfer the allowance to the contract
+        console.log("The amount transferred was:", allowance);
+        console.log(
+            "The Allowance balance of WETH for address(this):",
+            address(this),
+            "is now:",
+            weth.balanceOf(address(this))
+        );
+        require(sent, "Failed to send the tokens"); // Proceeds go to owner of contract
+        emit Transfer(msg.sender, address(this), allowance);
+    }
+
     //Allow Tokens to be purchased from this contract if one has the allowance and for a certain price of WETH
-   function buyTokensUsingWETH(uint256 amountOfWETH) external payable {
+    function buyTokensUsingWETH(uint256 amountOfWETH) external {
         require(amountOfWETH > 0, "\nMust send WETH");
 
         uint256 tokensToBuy = etherExchangeRate(amountOfWETH);
         console.log("Tokens to buy:", tokensToBuy);
 
-        console.log("Amount owed:", tokensToBuy * price);
-        console.log("Amount paid:", amountOfWETH);
-
-        uint256 contractTokenBalance = getTokenBalance();
+        uint256 addrTokenBalance = getTokenBalance();
         console.log(
             "The Address buying SQZ using WETH is:",
             address(this),
             " and its SQZ allowance to buy is:",
-            contractTokenBalance
+            addrTokenBalance
+        );
+        console.log("Owner: ", msg.sender);
+        console.log("Spender: ", address(this));
+
+        console.log(
+            "The WETH allowance for this contract buying tokens is: ",
+            weth.allowance(msg.sender, address(this))
         );
 
-        console.log("Amount of WETH sent:", amountOfWETH);
+        // Transfer WETH from the sender to this contract
+        bool wethReceived = weth.transfer(msg.sender, amountOfWETH);
+        require(wethReceived, "WETH transfer failed");
+
+        console.log("Amount owed:", tokensToBuy * price);
+        console.log("Amount paid:", amountOfWETH);
 
         associatedToken.transfer(msg.sender, tokensToBuy); // Send the transaction owner the amount of tokens
-        
+
         console.log(
-            "Purchase of",
+            "Sent the amount of: ",
             tokensToBuy,
-            " SQZ using WETH by",
+            " SQZ Bought by WETH by",
             address(this)
         );
+
         console.log("Its SQZ Allowance is now", getTokenBalance());
 
         emit Transfer(address(this), msg.sender, tokensToBuy);
     }
-
 
     //Allow Ether to be purchased from this contract if one has the allowance and for a certain price
     function buyTokensUsingEther() external payable {
@@ -121,18 +170,18 @@ contract DEX {
         console.log("Amount owed:", tokensToBuy * price);
         console.log("Amount paid:", msg.value);
 
-        uint256 contractTokenBalance = getTokenBalance();
+        uint256 addrTokenBalance = getTokenBalance();
         console.log(
             "The Address buying SQZ using Ether is:",
             address(this),
             " and its SQZ allowance to buy is:",
-            contractTokenBalance
+            addrTokenBalance
         );
 
         console.log("Amount of ETH sent:", msg.value);
 
         associatedToken.transfer(msg.sender, tokensToBuy); // Send the transaction owner the amount of tokens
-        
+
         console.log(
             "Purchase of",
             tokensToBuy,
@@ -147,11 +196,6 @@ contract DEX {
     //The owner is able to withdraw tokens at anytime
     function withdrawTokens() external onlyOwner {
         uint256 contractTokenBalance = getTokenBalance();
-        console.log(
-            "SQZ allowance balance for the contract:",
-            contractTokenBalance
-        );
-
         associatedToken.transfer(msg.sender, contractTokenBalance); //Allow the owner of the tokens to withdraw all the tokens
         console.log("The amount withdrawled was:", contractTokenBalance);
 
@@ -185,13 +229,17 @@ contract DEX {
         return amount;
     }
 
-    //Get the remaining balance of tokens within the contract
+    //  Returns the value of tokens owned by `account`.
     function getTokenBalance() public view returns (uint) {
         return associatedToken.balanceOf(address(this));
     }
 
-    //Get the balance of ETH within the contract that has been given allowance
-    function getETHBalance() public view returns (uint) {
-        return address(this).balance;
-    }
+    /**
+     * @dev Returns the remaining number of tokens that `spender` will be
+     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+     * zero by default.
+     *
+     * This value changes when {approve} or {transferFrom} are called.
+     */
+    // function allowance(address owner, address spender) external view returns (uint256);
 }

@@ -16,6 +16,7 @@ Contracts:
 - Max Supply capped - 100M SQZ - 15,625,000 boards
 - Tokens can be burned
 - mint tokens based on block reward and send to miner
+- Cost per token = .0001 SEPETH, passed as price = 1000 to the constuctor
 
 ## Using the Frontend
 

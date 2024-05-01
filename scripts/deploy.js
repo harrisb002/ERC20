@@ -12,7 +12,13 @@ async function main() {
   const square = await SquareToken.deploy("10000000", "10");
 
   await square.waitForDeployment();
-  await writeDeploymentInfo(square, "square.json"); //Write to JSON file
+  await writeDeploymentInfo(square, "squares.json"); //Write to JSON file
+
+  // const WethToken = await hre.ethers.getContractFactory("WETH");
+  // const weth = await WethToken.deploy("10000");
+
+  // await weth.waitForDeployment();
+  // await writeDeploymentInfo(weth, "weth.json"); //Write to JSON file
 }
 
 async function writeDeploymentInfo(contract, filename = "") {

@@ -1,71 +1,13 @@
-/**
- *Submitted for verification at Etherscan.io on 2023-03-14
- Using it here as a mock for a deployed instance to use in testing my contracts 
-*/
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-// File: contracts/mocks/WETH.sol
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-pragma solidity 0.7.5;
+contract WETH is ERC20 {
 
-// solhint-disable
-contract WETH {
-    string public name     = "Wrapped Ether";
-    string public symbol   = "WETH";
-    uint8  public decimals = 18;
-
-    event  Approval(address indexed src, address indexed guy, uint wad);
-    event  Transfer(address indexed src, address indexed dst, uint wad);
-    event  Deposit(address indexed dst, uint wad);
-    event  Withdrawal(address indexed src, uint wad);
-
-    mapping (address => uint)                       public  balanceOf;
-    mapping (address => mapping (address => uint))  public  allowance;
-
-    receive() external payable {
-        deposit();
-    }
-    function deposit() public payable {
-        balanceOf[msg.sender] += msg.value;
-        emit Deposit(msg.sender, msg.value);
-    }
-    function withdraw(uint wad) public {
-        require(balanceOf[msg.sender] >= wad);
-        balanceOf[msg.sender] -= wad;
-        msg.sender.transfer(wad);
-        emit Withdrawal(msg.sender, wad);
-    }
-
-    function totalSupply() public view returns (uint) {
-        return address(this).balance;
-    }
-
-    function approve(address guy, uint wad) public returns (bool) {
-        allowance[msg.sender][guy] = wad;
-        emit Approval(msg.sender, guy, wad);
-        return true;
-    }
-
-    function transfer(address dst, uint wad) public returns (bool) {
-        return transferFrom(msg.sender, dst, wad);
-    }
-
-    function transferFrom(address src, address dst, uint wad)
-        public
-        returns (bool)
-    {
-        require(balanceOf[src] >= wad);
-
-        if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {
-            require(allowance[src][msg.sender] >= wad);
-            allowance[src][msg.sender] -= wad;
-        }
-
-        balanceOf[src] -= wad;
-        balanceOf[dst] += wad;
-
-        emit Transfer(src, dst, wad);
-
-        return true;
+    constructor(uint initialSupply) ERC20("weth", "WETH") {//Call ERC20 base contract constructor
+    // _mint => Creates a certain amount of tokens and assigns to the deployer of the contract.
+    // Internal function and must be called within the smart contract
+        _mint(msg.sender, initialSupply); //Thus only this address can mint tokens. Limiting and can be update with more addresses
     }
 }
-// solhint-enable
