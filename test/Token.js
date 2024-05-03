@@ -61,8 +61,8 @@
 //       await squaresToken.transfer(addr1.address, 100);
 
 //       // Check owner balance.
-//       const ownerBalance = await squaresToken.balanceOf(owner.address);
-//       const expOwnerBalance = ownerBalance - BigInt(100);
+//       let ownerBalance = await squaresToken.balanceOf(owner.address);
+//       let expOwnerBalance = ownerBalance - BigInt(100);
 //       expect(expOwnerBalance).to.equal(expOwnerBalance);
 
 //       ownerBalance = await squaresToken.balanceOf(owner.address);
