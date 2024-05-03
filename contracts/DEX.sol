@@ -61,8 +61,8 @@ contract DEX {
         );
         emit Approval(msg.sender, address(this), allowance);
 
-        bool sent = weth.transferFrom(msg.sender, address(this), allowance); 
-        require(sent, "Failed to send the tokens"); 
+        bool sent = weth.transferFrom(msg.sender, address(this), allowance);
+        require(sent, "Failed to send the tokens");
         emit Transfer(msg.sender, address(this), allowance);
     }
 
@@ -74,7 +74,7 @@ contract DEX {
             addrSqzAllowance >= tokensToBuy,
             "\nMust DEX contract must have SQZ allowance >= tokensToBuy"
         );
-        associatedToken.transfer(msg.sender, tokensToBuy); 
+        associatedToken.transfer(msg.sender, tokensToBuy);
         emit Transfer(address(this), msg.sender, tokensToBuy);
     }
 
@@ -118,10 +118,9 @@ contract DEX {
 
     // Withdraw all of the Eth balance from contract
     function withdrawEth() external onlyOwner {
-        uint256 contractWethBalance = address(this).balance;
-        require(contractWethBalance > 0, "Contract must posses ETH");
-
         uint256 contractEthBalance = address(this).balance;
+        require(contractEthBalance > 0, "Contract must posses ETH");
+
         (bool sent, ) = owner.call{value: contractEthBalance}("");
         require(sent, "Transaction failed");
         emit Transfer(address(this), owner, contractEthBalance);
@@ -131,7 +130,7 @@ contract DEX {
     function withdrawWeth() external onlyOwner {
         uint256 contractWethBalance = weth.balanceOf(address(this));
         require(contractWethBalance > 0, "Contract must posses WETH");
-       
+
         bool sent = weth.transfer(payable(owner), contractWethBalance);
         require(sent, "Transaction failed");
         emit Transfer(address(this), owner, address(this).balance);
