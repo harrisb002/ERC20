@@ -32,7 +32,7 @@ describe("DEX", function () {
     dex = await DEX.deploy(squaresToken.target, wethToken.target, price); // Connect the sqaures contract
   });
 
-  describe("Sell", () => {
+  describe("SQZ Allowance", () => {
     it("Should fail transferSQZAllowance if contract is not approved (owner)", async () => {
       await expect(dex.transferSQZAllowance()).to.be.reverted;
     });
@@ -41,11 +41,11 @@ describe("DEX", function () {
       await expect(dex.connect(sqzAddr1).transferSQZAllowance()).to.be.reverted;
     });
 
-    it("Should allow contract to approve tokens for an address", async () => {
+    it("Should allow contract to approve SQZ for an address", async () => {
       await squaresToken.approve(dex.target, 100);
     });
 
-    it("Sell should transfer tokens from owner to contract", async () => {
+    it("transferSQZAllowance should transfer SQZ from owner to contract", async () => {
       await squaresToken.approve(dex.target, 100);
 
       await expect(dex.transferSQZAllowance()).to.changeTokenBalances(
@@ -55,6 +55,30 @@ describe("DEX", function () {
       );
     });
   });
+
+  describe("WETH Allowance", () => {
+    it("Should fail transferWethAllowance if contract is not approved (owner)", async () => {
+      await expect(dex.transferWethAllowance()).to.be.reverted;
+    });
+
+    it("Should not allow non-owner to call transferWethAllowance", async () => {
+      await expect(dex.connect(wethAddr1).transferWethAllowance()).to.be.reverted;
+    });
+
+    it("Should allow contract to approve Weth for an address", async () => {
+      await wethToken.approve(dex.target, 100);
+    });
+
+    it("transferWethAllowance should transfer Weth from msg.sender to contract", async () => {
+      await wethToken.approve(dex.target, ethers.parseEther("1"));
+      await expect(dex.transferWethAllowance()).to.changeTokenBalances(
+        wethToken,
+        [wethOwner.address, dex.target],
+        [-expWethTaken, expWethRecieved] // Set as constants above as -1 & 1 Eth
+      );
+    });
+  });
+
   describe("SQZ Price and Balance", () => {
     it("Should return correct token balance", async () => {
       await squaresToken.approve(dex.target, 100);
@@ -329,7 +353,7 @@ describe("DEX", function () {
       //Using Change Ether balances function
       await expect(dex.withdrawEth()).to.changeEtherBalances(
         [dex.target, dexOwner.address],
-        [-expWethTaken, expWethRecieved] // Using predefined constants for -1 & 1 WETH
+        [-expWethTaken, expWethRecieved] 
       );
     });
   });
@@ -354,7 +378,7 @@ describe("DEX", function () {
       await expect(dex.transferWethAllowance()).to.changeTokenBalances(
         wethToken,
         [wethOwner.address, dex.target],
-        [-expWethTaken, expWethRecieved] // Using predefined constants for -1 & 1 WETH
+        [-expWethTaken, expWethRecieved] 
       );
 
       await expect(
@@ -368,7 +392,7 @@ describe("DEX", function () {
       await expect(dex.withdrawWeth()).to.changeTokenBalances(
         wethToken,
         [dex.target, dexOwner.address],
-        [-expWethTaken, expWethRecieved] // Using predefined constants for -1 & 1 WETH
+        [-expWethTaken, expWethRecieved] 
       );
     });
   });
