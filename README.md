@@ -7,6 +7,9 @@ Reference Docs: https://docs.openzeppelin.com/contracts/5.x/erc20
 
 Contracts:
 
+## MAIN:
+- 0x798a63a9f26c26cE143ccd1Bb99ef77a71A38939
+
 - Token.sol: Contract to represent the ERC20 Token
 - DEX.sol: Contract to act as a decentralized exchange to trade in tokens for Ethereum
 
@@ -36,7 +39,7 @@ Contracts:
 4. To test the contract run `npx hardhat test`
 5. To deploy the contract to your network do the following:
    - `npx hardhat node`
-   - `npx hardhat run --network <network> ./script/deploy.js`
+   - `npx hardhat run --network <network> ./scripts/deploy.js`
 
 #### Other Useful Commands
 

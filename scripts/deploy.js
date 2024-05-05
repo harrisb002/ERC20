@@ -8,17 +8,13 @@ const hre = require("hardhat");
 const fs = require("fs/promises");
 
 async function main() {
+  const WETH_CONTRACT = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
+
   const SquareToken = await hre.ethers.getContractFactory("Squares");
-  const square = await SquareToken.deploy("10000000", "10");
+  const square = await SquareToken.deploy(WETH_CONTRACT, ethers.parseEther("0.001"));
 
   await square.waitForDeployment();
   await writeDeploymentInfo(square, "squares.json"); //Write to JSON file
-
-  // const WethToken = await hre.ethers.getContractFactory("WETH");
-  // const weth = await WethToken.deploy("10000");
-
-  // await weth.waitForDeployment();
-  // await writeDeploymentInfo(weth, "weth.json"); //Write to JSON file
 }
 
 async function writeDeploymentInfo(contract, filename = "") {

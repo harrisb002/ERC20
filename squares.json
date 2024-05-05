@@ -1,15 +1,13 @@
 {
   "network": "sepolia",
   "contract": {
-    "address": "0x04a689ebA940d32b16311b4ff18Af3d4DC119031",
-    "signerAddress": "0x274C99f88a9651769CE5C96bFFe7C595B68A20B3",
+    "address": "0x798a63a9f26c26cE143ccd1Bb99ef77a71A38939",
+    "signerAddress": "0xdCA70C7890941bB134b3E30be665e1Ea9836286B",
     "abi": [
-      "constructor(uint256 TokenCap, uint256 reward)",
-      "error ERC20ExceededCap(uint256 increasedSupply, uint256 cap)",
+      "constructor(address _weth, uint256 _price)",
       "error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed)",
       "error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed)",
       "error ERC20InvalidApprover(address approver)",
-      "error ERC20InvalidCap(uint256 cap)",
       "error ERC20InvalidReceiver(address receiver)",
       "error ERC20InvalidSender(address sender)",
       "error ERC20InvalidSpender(address spender)",
@@ -18,19 +16,22 @@
       "function allowance(address owner, address spender) view returns (uint256)",
       "function approve(address spender, uint256 value) returns (bool)",
       "function balanceOf(address account) view returns (uint256)",
-      "function blockReward() view returns (uint256)",
-      "function burn(uint256 value)",
-      "function burnFrom(address account, uint256 value)",
-      "function cap() view returns (uint256)",
+      "function buyTokensUsingEther() payable",
+      "function buyTokensUsingWETH(uint256 amountOfWETH)",
       "function decimals() view returns (uint8)",
-      "function destroy()",
+      "function etherExchangeRate(uint256 amountOfEtherOrWETH) view returns (uint256)",
+      "function getUserSQZBalance(address userAddress) view returns (uint256)",
       "function name() view returns (string)",
       "function owner() view returns (address)",
-      "function setBlockReward(uint256 reward)",
+      "function price() view returns (uint256)",
       "function symbol() view returns (string)",
       "function totalSupply() view returns (uint256)",
       "function transfer(address to, uint256 value) returns (bool)",
-      "function transferFrom(address from, address to, uint256 value) returns (bool)"
+      "function transferFrom(address from, address to, uint256 value) returns (bool)",
+      "function weth() view returns (address)",
+      "function withdrawEth()",
+      "function withdrawTokens()",
+      "function withdrawWETH()"
     ]
   }
 }
